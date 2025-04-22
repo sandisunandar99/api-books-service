@@ -21,4 +21,11 @@ app.use(helmet());
 app.use(morgan("dev"));
 
 
+
+// Health check endpoint
+app.get("/health", (req, res) => {
+  res.status(200).json({ status: "up" });
+});
+
+
 export default app;
