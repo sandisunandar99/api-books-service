@@ -5,6 +5,7 @@ import helmet from "helmet";
 import morgan from "morgan";
 import dotenv from "dotenv";
 
+import bookRoutes from "./routes/bookRoutes";
 
 // Load environment variables
 dotenv.config();
@@ -21,6 +22,8 @@ app.use(helmet());
 app.use(morgan("dev"));
 
 
+// Routes
+app.use("/books", bookRoutes);
 
 // Health check endpoint
 app.get("/health", (req, res) => {
