@@ -6,8 +6,6 @@ import {
 } from "../controllers/bookController";
 
 
-
-
 router.post('/', createBook);
 
 
