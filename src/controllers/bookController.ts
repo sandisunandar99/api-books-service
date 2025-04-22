@@ -28,3 +28,13 @@ export const createBook = async (req: Request, res: Response) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 };
+
+export const getAllBooks = async (req: Request, res: Response) => {
+  try {
+    const books = await bookModel.getAll();
+    return res.status(200).json(books);
+  } catch (error) {
+    console.error("Error getting all books:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
