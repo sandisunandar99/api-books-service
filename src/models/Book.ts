@@ -27,7 +27,6 @@ export class BookModel {
 
     return this.bookRepository.save(book);
   }
-
   private async getOrCreateGenres(genreNames: string[]): Promise<Genre[]> {
     const genres: Genre[] = [];
 
@@ -65,8 +64,24 @@ export class BookModel {
       relations: ["genres"],
     });
   }
+  async update(id: string, bookInput: BookInput): Promise<Book | null> {
+    const book = await this.bookRepository.findOne({
+      where: { id },
+      relations: ["genres"],
+    });
 
-  
+    if (!book) {
+      return null;
+    }
+
+    book.title = bookInput.title;
+    book.author = bookInput.author;
+    book.publishedYear = bookInput.publishedYear;
+    book.stock = bookInput.stock;
+    book.genres = await this.getOrCreateGenres(bookInput.genres);
+
+    return this.bookRepository.save(book);
+  }
 }// end class
 
 // Singleton instance for the application

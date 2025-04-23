@@ -38,3 +38,21 @@ export const getBookById = async (req: Request, res: Response) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 };
+
+export const updateBook = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const bookInput: BookInput = req.body;
+
+    const updatedBook = await bookModel.update(id, bookInput);
+
+    if (!updatedBook) {
+      return res.status(404).json({ message: `Book with id ${id} not found` });
+    }
+
+    return res.status(200).json(updatedBook);
+  } catch (error) {
+    console.error(`Error updating book with id ${req.params.id}:`, error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
