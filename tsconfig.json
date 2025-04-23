@@ -3,8 +3,8 @@
     "target": "ES2020",
     "module": "CommonJS",
     "moduleResolution": "Node",
-    "types": ["react", "react-dom"],
-    "outDir": "./dist",
+    "types": ["jest", "node"],
+    "outDir": "./build",
     "rootDir": "./src",
     "jsx": "react-jsx",
     "strict": true,
@@ -16,7 +16,8 @@
     "emitDecoratorMetadata": true,
     "allowImportingTsExtensions": true,
     "noEmit": true,
-    "isolatedModules": true
+    "isolatedModules": true,
+    "typeRoots": ["./node_modules/@types", "./src/tests"]
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "**/*.test.ts"]
