@@ -100,8 +100,8 @@ import {
   getBookById,
   updateBook,
   deleteBook,
-} from "../controllers/bookController.ts";
-import { validateBook, validateBookId } from "../validations/bookValidation.ts";
+} from "../controllers/bookController";
+import { validateBook, validateBookId } from "../validations/bookValidation";
 
 
 /**

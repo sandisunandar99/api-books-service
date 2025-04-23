@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node dist/server.js",
     "dev": "tsx watch src/server.ts",
-    "build": "tsc",
+    "build": "tsc --noEmitOnError false",
     "test": "NODE_ENV=test jest --detectOpenHandles --forceExit --verbose",
     "test:watch": "NODE_ENV=test jest --watch --detectOpenHandles --verbose",
     "migrate": "typeorm-ts-node-esm migration:run -d src/database/data-source.ts",
@@ -16,6 +16,7 @@
     "schema:sync": "typeorm-ts-node-esm schema:sync -d src/database/data-source.ts"
   },
   "dependencies": {
+    "@jest/globals": "^29.7.0",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
@@ -66,5 +67,15 @@
   "bugs": {
     "url": "https://github.com/sandisunandar99/api-books-service/issues"
   },
-  "homepage": "https://github.com/sandisunandar99/api-books-service#readme"
+  "homepage": "https://github.com/sandisunandar99/api-books-service#readme",
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "setupFilesAfterEnv": [
+      "<rootDir>/src/tests/setup.ts"
+    ],
+    "moduleNameMapper": {
+      "^(\\.{1,2}/.*)\\.js$": "$1"
+    }
+  }
 }

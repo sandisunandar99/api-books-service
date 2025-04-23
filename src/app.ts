@@ -5,12 +5,12 @@ import helmet from "helmet";
 import morgan from "morgan";
 import dotenv from "dotenv";
 
-import bookRoutes from "./routes/bookRoutes.ts";
-import { AppDataSource } from "./database/data-source.ts";
+import bookRoutes from "./routes/bookRoutes";
+import { AppDataSource } from "./database/data-source";
 
 // set middleware for rate limiting and error handling
-import {apiLimiter} from "./middleware/rateLimiter.ts";
-import {notFoundHandler, errorHandler} from "./middleware/errorHandler.ts";
+import {apiLimiter} from "./middleware/rateLimiter";
+import {notFoundHandler, errorHandler} from "./middleware/errorHandler";
 
 // init swagger
 import swaggerJSDoc from "swagger-jsdoc";

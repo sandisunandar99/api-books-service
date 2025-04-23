@@ -3,6 +3,7 @@ import { DataSource } from "typeorm";
 import { Book } from "../entities/Book.js";
 import { Genre } from "../entities/Genre.js";
 import dotenv from 'dotenv';
+// import { beforeAll, afterAll, beforeEach } from "@jest/globals";
 
 dotenv.config();
 
@@ -50,4 +51,16 @@ beforeEach(async () => {
     console.error("Error during test cleanup", error);
   }
 });
+
+function beforeAll(arg0: () => Promise<void>) {
+  throw new Error("Function not implemented.");
+}
+
+function afterAll(arg0: () => Promise<void>) {
+  throw new Error("Function not implemented.");
+}
+
+function beforeEach(arg0: () => Promise<void>) {
+  throw new Error("Function not implemented.");
+}
 

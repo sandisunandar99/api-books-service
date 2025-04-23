@@ -98,4 +98,103 @@ describe('Book API Endpoints', () => {
       });
     });
 
+    describe("GET /books/:id", () => {
+      it("should return a book by valid ID", async () => {
+        const res = await request(app).get(`/books/${createdBookId}`);
+
+        expect(res.status).toBe(200);
+        expect(res.body).toHaveProperty("id", createdBookId);
+        expect(res.body.title).toBe(testBook.title);
+      });
+
+      it("should return 404 for non-existent book", async () => {
+        const res = await request(app).get(`/books/${validUUID}`);
+
+        expect(res.status).toBe(404);
+        expect(res.body.message).toContain("not found");
+      });
+    });
+
+  describe("PUT /books/:id", () => {
+    const updatedBook = {
+      ...testBook,
+      title: "Updated Test Book",
+      author: "Updated Author",
+      stock: 15,
+    };
+
+    it("should update a book with valid data", async () => {
+      const res = await request(app)
+        .put(`/books/${createdBookId}`)
+        .send(updatedBook);
+
+      expect(res.status).toBe(200);
+      expect(res.body).toHaveProperty("id", createdBookId);
+      expect(res.body.title).toBe(updatedBook.title);
+      expect(res.body.author).toBe(updatedBook.author);
+      expect(res.body.stock).toBe(updatedBook.stock);
+    });
+
+    it("should return 400 for invalid UUID format", async () => {
+      const res = await request(app)
+        .put(`/books/${invalidUUID}`)
+        .send(updatedBook);
+
+      expect(res.status).toBe(400);
+      expect(res.body.message).toContain("Invalid book ID format");
+    });
+
+    it("should return 404 for non-existent book", async () => {
+      const res = await request(app)
+        .put(`/books/${validUUID}`)
+        .send(updatedBook);
+
+      expect(res.status).toBe(404);
+      expect(res.body.message).toContain("not found");
+    });
+
+    it("should return 400 for invalid data", async () => {
+      const invalidUpdate = {
+        ...updatedBook,
+        publishedYear: 3000,
+      };
+
+      const res = await request(app)
+        .put(`/books/${createdBookId}`)
+        .send(invalidUpdate);
+
+      expect(res.status).toBe(400);
+      expect(res.body.errors[0].message).toContain(
+        "Published year cannot be in the future"
+      );
+    });
+  });
+
+  describe("DELETE /books/:id", () => {
+    it("should delete a book with valid ID", async () => {
+      const res = await request(app).delete(`/books/${createdBookId}`);
+
+      expect(res.status).toBe(200);
+      expect(res.body.message).toContain("deleted successfully");
+
+      // Verify the book was deleted
+      const getRes = await request(app).get(`/books/${createdBookId}`);
+      expect(getRes.status).toBe(404);
+    });
+
+    it("should return 400 for invalid UUID format", async () => {
+      const res = await request(app).delete(`/books/${invalidUUID}`);
+
+      expect(res.status).toBe(400);
+      expect(res.body.message).toContain("Invalid book ID format");
+    });
+
+    it("should return 404 for non-existent book", async () => {
+      const res = await request(app).delete(`/books/${validUUID}`);
+
+      expect(res.status).toBe(404);
+      expect(res.body.message).toContain("not found");
+    });
+  });
+
 }); // End of describe('Book API Endpoints')
