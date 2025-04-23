@@ -1,23 +1,7 @@
 import { Request, Response } from "express";
 import { BookInput, bookModel } from "../models/Book";
-import { bookSchema } from "../validations/bookValidation";
 export const createBook = async (req: Request, res: Response) => {
   try {
-    
-    //validation param before insert
-    const { error, value } = bookSchema.validate(req.body, {
-      abortEarly: false,
-    });
-
-    if (error) {
-      return res.status(400).json({
-        errors: error.details.map((detail) => ({
-          field: detail.context?.key,
-          message: detail.message,
-        })),
-      });
-    }
-
     //define model for input data
     const bookInput: BookInput = req.body;
     const newBook = await bookModel.create(bookInput);
