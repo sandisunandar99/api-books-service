@@ -6,7 +6,12 @@ import morgan from "morgan";
 import dotenv from "dotenv";
 
 import bookRoutes from "./routes/bookRoutes";
-import { AppDataSource } from "./database/data-source.js";
+import { AppDataSource } from "./database/data-source";
+
+// set middleware for rate limiting and error handling
+import {apiLimiter} from "./middleware/rateLimiter";
+import {notFoundHandler, errorHandler} from "./middleware/errorHandler";
+
 
 // Load environment variables
 dotenv.config();
@@ -30,6 +35,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 app.use(helmet());
 app.use(morgan("dev"));
+app.use(apiLimiter); // Apply rate limiting middleware
 
 // Routes
 app.use("/books", bookRoutes);
@@ -38,6 +44,12 @@ app.use("/books", bookRoutes);
 app.get("/health", (req, res) => {
   res.status(200).json({ status: "up" });
 });
+
+// Handle 404 errors
+app.use(notFoundHandler);
+
+// Global error handler
+app.use(errorHandler);
 
 
 export default app;
