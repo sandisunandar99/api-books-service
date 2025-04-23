@@ -44,13 +44,7 @@ npm start
 
 ```bash
 # Development mode
-docker-compose up api-dev
-
-# Production mode
-docker-compose up api-prod
-
-# Run tests
-docker-compose up api-test
+docker-compose up -d
 ```
 
 ## API Documentation
