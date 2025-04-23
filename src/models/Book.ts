@@ -20,6 +20,12 @@ export interface BookOutput {
   stock: number;
 }
 
+interface GetAllOptions {
+  search?: string;
+  skip?: number;
+  limit?: number;
+}
+
 export class BookModel {
   private bookRepository = AppDataSource.getRepository(Book);
   private genreRepository = AppDataSource.getRepository(Genre);
@@ -67,21 +73,40 @@ export class BookModel {
     return genres;
   }
 
-  async getAll(): Promise<BookOutput[]> {
+  async getAll(options: GetAllOptions = {}): Promise<[BookOutput[], number]> {
+    
+    const { search = "", skip = 0, limit = 10 } = options;
+
     const queryBuilder = this.bookRepository
       .createQueryBuilder("book")
       .leftJoinAndSelect("book.genres", "genre");
 
-    const books = await queryBuilder.getMany();
+    if (search) {
+      queryBuilder
+        .where("LOWER(book.title) LIKE LOWER(:search)", {
+          search: `%${search}%`,
+        })
+        .orWhere("LOWER(book.author) LIKE LOWER(:search)", {
+          search: `%${search}%`,
+        })
+        .orWhere("LOWER(genre.name) LIKE LOWER(:search)", {
+          search: `%${search}%`,
+        });
+    }
 
-    return books.map((book) => ({
+    const [books, totalBooks] = await queryBuilder
+          .skip(skip)
+          .take(limit)
+          .getManyAndCount();
+
+    return [books.map((book) => ({
       id: book.id,
       title: book.title,
       author: book.author,
       publishedYear: book.publishedYear,
       genres: book.genres.map((genre) => genre.name),
       stock: book.stock,
-    }));
+    })), totalBooks];
   }
 
   async getById(id: string): Promise<BookOutput | null> {
@@ -122,17 +147,17 @@ export class BookModel {
     book.stock = bookInput.stock;
     book.genres = await this.getOrCreateGenres(bookInput.genres);
 
-    // save data 
+    // save data
     this.bookRepository.save(book);
 
-     return {
-       id: book.id,
-       title: book.title,
-       author: book.author,
-       publishedYear: book.publishedYear,
-       genres: book.genres.map((genre) => genre.name),
-       stock: book.stock,
-     };
+    return {
+      id: book.id,
+      title: book.title,
+      author: book.author,
+      publishedYear: book.publishedYear,
+      genres: book.genres.map((genre) => genre.name),
+      stock: book.stock,
+    };
   }
 
   async delete(id: string): Promise<boolean> {

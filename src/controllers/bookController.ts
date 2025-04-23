@@ -16,6 +16,34 @@ export const createBook = async (req: Request, res: Response) => {
 
 export const getAllBooks = async (req: Request, res: Response) => {
   try {
+    // create pagination and searching data
+    // check param query first
+    // check query available on path
+    const queryKeys = Object.keys(req.query).length > 0;
+
+    if (queryKeys) {
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 10;
+      const search = (req.query.search as string) || "";
+
+      const skip = (page - 1) * limit;
+
+      const [books, totalBooks] = await bookModel.getAll({
+        search,
+        skip,
+        limit,
+      });
+
+      const totalPages = Math.ceil(totalBooks / limit);
+
+      return res.status(200).json({
+        page,
+        totalPages,
+        totalBooks,
+        books: books,
+      });
+    }
+
     const books = await bookModel.getAll();
     return res.status(200).json(books);
   } catch (error) {
