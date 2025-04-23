@@ -1,9 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
-import { AppDataSource } from "../database/data-source.js";
-import { Book } from "../entities/Book.js";
-import { Genre } from "../entities/Genre.js";
+import { AppDataSource } from "../database/data-source";
+import { Genre } from "../entities/Genre";
 import { Book } from '../entities/Book';
-import { promises } from "dns";
 
 export interface BookInput {
   title: string;
