@@ -67,15 +67,5 @@
   "bugs": {
     "url": "https://github.com/sandisunandar99/api-books-service/issues"
   },
-  "homepage": "https://github.com/sandisunandar99/api-books-service#readme",
-  "jest": {
-    "preset": "ts-jest",
-    "testEnvironment": "node",
-    "setupFilesAfterEnv": [
-      "<rootDir>/src/tests/setup.ts"
-    ],
-    "moduleNameMapper": {
-      "^(\\.{1,2}/.*)\\.js$": "$1"
-    }
-  }
+  "homepage": "https://github.com/sandisunandar99/api-books-service#readme"
 }
