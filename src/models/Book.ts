@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
-import { AppDataSource } from "../database/data-source";
-import { Genre } from "../entities/Genre";
-import { Book } from '../entities/Book';
+import { AppDataSource } from "../database/data-source.ts";
+import { Genre } from "../entities/Genre.ts";
+import { Book } from '../entities/Book.ts';
 
 export interface BookInput {
   title: string;
