@@ -38,42 +38,64 @@ describe('Book API Endpoints', () => {
 
   // start of test cases here !!!!!!!!!!!!
 
-  describe("POST /books", () => {
-    it("should create a new book with valid data", async () => {
-      const res = await request(app).post("/books").send(testBook);
+    describe("POST /books", () => {
+        it("should create a new book with valid data", async () => {
+        const res = await request(app).post("/books").send(testBook);
 
-        expect(res.status).toBe(201);
-        expect(res.body.genres).toBeInstanceOf(Array);
-        createdBookId = res.body.id;
+            expect(res.status).toBe(201);
+            expect(res.body.genres).toBeInstanceOf(Array);
+            createdBookId = res.body.id;
+        });
+
+        it("should return 400 for missing required fields", async () => {
+        const invalidBook = {
+            title: "",
+            author: "Test Author",
+        };
+
+        const res = await request(app).post("/books").send(invalidBook);
+
+        expect(res.status).toBe(400);
+        expect(res.body).toHaveProperty("errors");
+        });
+
+        it("should return 400 for invalid published year", async () => {
+        const invalidBook = {
+            ...testBook,
+            publishedYear: 3000,
+        };
+
+        const res = await request(app).post("/books").send(invalidBook);
+
+        expect(res.status).toBe(400);
+        expect(res.body.errors[0].message).toContain(
+            "Published year cannot be in the future"
+        );
+        });
     });
 
-    it("should return 400 for missing required fields", async () => {
-      const invalidBook = {
-        title: "",
-        author: "Test Author",
-      };
+    describe("GET /books", () => {
+      it("should return all books with pagination", async () => {
+        const res = await request(app).get("/books?page=1&limit=10");
 
-      const res = await request(app).post("/books").send(invalidBook);
+        expect(res.status).toBe(200);
+        expect(res.body).toHaveProperty("page");
+        expect(res.body).toHaveProperty("totalPages");
+        expect(res.body).toHaveProperty("totalBooks");
+        expect(res.body).toHaveProperty("books");
+      });
 
-      expect(res.status).toBe(400);
-      expect(res.body).toHaveProperty("errors");
+      it("should search books", async () => {
+        const res = await request(app).get(
+          "/books?search=Test&page=1&limit=10"
+        );
+
+        expect(res.status).toBe(200);
+        expect(res.body).toHaveProperty("page");
+        expect(res.body).toHaveProperty("totalPages");
+        expect(res.body).toHaveProperty("totalBooks");
+        expect(res.body).toHaveProperty("books");
+      });
     });
 
-    it("should return 400 for invalid published year", async () => {
-      const invalidBook = {
-        ...testBook,
-        publishedYear: 3000,
-      };
-
-      const res = await request(app).post("/books").send(invalidBook);
-
-      expect(res.status).toBe(400);
-      expect(res.body.errors[0].message).toContain(
-        "Published year cannot be in the future"
-      );
-    });
-  });
-
-
-    
 }); // End of describe('Book API Endpoints')
