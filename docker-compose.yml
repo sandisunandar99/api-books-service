@@ -21,6 +21,8 @@ services:
       timeout: 10s
       retries: 5
     restart: unless-stopped
+    networks:
+      - library_network
 
   # Development service
   api-dev:
@@ -28,10 +30,11 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: library-api-dev
+    platform: linux/amd64
     ports:
       - "3000:3000"
     environment:
-      - NODE_ENV=development
+      - NODE_ENV=production
       - PORT=3000
       - API_URL=http://localhost:3000
       - DB_HOST=mariadb
@@ -40,13 +43,19 @@ services:
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_NAME=${DB_NAME}
     volumes:
-      - ./src:/app/src
-      - ./node_modules:/app/node_modules
-    command: npm run dev
+    - ./src:/app/src
+    - ./node_modules:/app/node_modules
+    # command: npm run dev
     depends_on:
       mariadb:
         condition: service_healthy
-    restart: unless-stopped
+    restart: always
+    networks:
+      - library_network
 
 volumes:
   mariadb_data:
+
+networks:
+  library_network:
+    driver: bridge

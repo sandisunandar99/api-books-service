@@ -3,35 +3,26 @@ FROM node:20-alpine AS build
 
 WORKDIR /app
 
-# Copy package.json and package-lock.json
 COPY package*.json ./
-
-# Install dependencies
 RUN npm ci
 
-# Copy source code
 COPY . .
-
-# Build the application
-RUN npm run build
+RUN npm run build  # Assumes this compiles TypeScript into dist/
 
 # Stage 2: Run the application
 FROM node:20-alpine
 
 WORKDIR /app
 
-# Set environment variables
-ENV NODE_ENV=production
-
-# Copy production dependencies only
-COPY --from=build /app/package*.json ./
+COPY package*.json ./
 RUN npm ci --only=production
 
-# Copy build files and ensure directory exists
+# Copy built files from build stage
 COPY --from=build /app/dist ./dist
+# Copy any other necessary files like package.json
+COPY --from=build /app/package.json ./
 
-# Expose the port the app runs on
+# Expose port
 EXPOSE 3000
 
-# Command to run the application
-CMD ["node", "build/server.js"]
+CMD ["node", "./dist/server.js"]
