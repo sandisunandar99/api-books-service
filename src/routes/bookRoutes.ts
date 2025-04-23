@@ -103,7 +103,42 @@ import {
 } from "../controllers/bookController";
 import { validateBook, validateBookId } from "../validations/bookValidation";
 
+
+/**
+ * @swagger
+ * /books:
+ *   post:
+ *     summary: Create a new book
+ *     tags: [Books]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/BookInput'
+ *     responses:
+ *       201:
+ *         description: The book was successfully created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Book'
+ *       400:
+ *         description: Invalid input
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 router.post("/", validateBook, createBook);
+
+
 router.get("/", getAllBooks);
 router.get("/:id", validateBookId, getBookById);
 router.put("/:id", validateBookId, validateBook, updateBook);

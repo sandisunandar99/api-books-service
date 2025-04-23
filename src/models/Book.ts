@@ -41,7 +41,7 @@ export class BookModel {
     book.genres = await this.getOrCreateGenres(bookInput.genres);
 
     //save data
-    this.bookRepository.save(book);
+    await this.bookRepository.save(book);
 
     return {
       id: book.id,
