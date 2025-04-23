@@ -55,6 +55,10 @@ export class BookModel {
 
     const books = await queryBuilder.getMany();
 
+    console.log("modellll");
+    console.log(books);
+    
+
     return books;
   }
 
@@ -64,6 +68,7 @@ export class BookModel {
       relations: ["genres"],
     });
   }
+  
   async update(id: string, bookInput: BookInput): Promise<Book | null> {
     const book = await this.bookRepository.findOne({
       where: { id },
@@ -81,6 +86,11 @@ export class BookModel {
     book.genres = await this.getOrCreateGenres(bookInput.genres);
 
     return this.bookRepository.save(book);
+  }
+
+  async delete(id: string): Promise<boolean> {
+    const result = await this.bookRepository.delete(id);
+    return result.affected ? result.affected > 0 : false;
   }
 }// end class
 
