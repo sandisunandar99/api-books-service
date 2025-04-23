@@ -12,6 +12,10 @@ import { AppDataSource } from "./database/data-source";
 import {apiLimiter} from "./middleware/rateLimiter";
 import {notFoundHandler, errorHandler} from "./middleware/errorHandler";
 
+// init swagger
+import swaggerJSDoc from "swagger-jsdoc";
+import swaggerUi from "swagger-ui-express";
+
 
 // Load environment variables
 dotenv.config();
@@ -29,6 +33,31 @@ AppDataSource.initialize()
   });
 
 
+// Define Swagger options
+const swaggerOptions = {
+  definition: {
+    openapi: "3.0.0",
+    info: {
+      title: "API Book Service",
+      version: "1.0.0",
+      description: "A RESTful API for managing library books",
+      contact: {
+        name: "sandi sunandar",
+        email: "sandisunandar99@gmail.com",
+      },
+    },
+    servers: [
+      {
+        url: process.env.API_URL || "http://localhost:3000",
+        description: "Development server",
+      },
+    ],
+  },
+  apis: ["./src/routes/*.ts"],
+};
+
+const swaggerSpec = swaggerJSDoc(swaggerOptions);
+
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -36,6 +65,10 @@ app.use(cors());
 app.use(helmet());
 app.use(morgan("dev"));
 app.use(apiLimiter); // Apply rate limiting middleware
+
+
+// API Documentation
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Routes
 app.use("/books", bookRoutes);
@@ -50,6 +83,5 @@ app.use(notFoundHandler);
 
 // Global error handler
 app.use(errorHandler);
-
 
 export default app;
