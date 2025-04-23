@@ -24,7 +24,7 @@ export class BookModel {
   private bookRepository = AppDataSource.getRepository(Book);
   private genreRepository = AppDataSource.getRepository(Genre);
 
-  async create(bookInput: BookInput): Promise<Book> {
+  async create(bookInput: BookInput): Promise<BookOutput> {
     const book = new Book();
     book.title = bookInput.title;
     book.author = bookInput.author;
@@ -34,7 +34,17 @@ export class BookModel {
     // Handle genres
     book.genres = await this.getOrCreateGenres(bookInput.genres);
 
-    return this.bookRepository.save(book);
+    //save data
+    this.bookRepository.save(book);
+
+    return {
+      id: book.id,
+      title: book.title,
+      author: book.author,
+      publishedYear: book.publishedYear,
+      genres: book.genres.map((genre) => genre.name),
+      stock: book.stock,
+    };
   }
   private async getOrCreateGenres(genreNames: string[]): Promise<Genre[]> {
     const genres: Genre[] = [];
@@ -74,14 +84,29 @@ export class BookModel {
     }));
   }
 
-  async getById(id: string): Promise<Book | null> {
-    return this.bookRepository.findOne({
+  async getById(id: string): Promise<BookOutput | null> {
+    const result = this.bookRepository.findOne({
       where: { id },
       relations: ["genres"],
     });
+
+    return result.then((book) => {
+      if (!book) {
+        return null;
+      }
+
+      return {
+        id: book.id,
+        title: book.title,
+        author: book.author,
+        publishedYear: book.publishedYear,
+        genres: book.genres.map((genre) => genre.name),
+        stock: book.stock,
+      };
+    });
   }
 
-  async update(id: string, bookInput: BookInput): Promise<Book | null> {
+  async update(id: string, bookInput: BookInput): Promise<BookOutput | null> {
     const book = await this.bookRepository.findOne({
       where: { id },
       relations: ["genres"],
@@ -97,7 +122,17 @@ export class BookModel {
     book.stock = bookInput.stock;
     book.genres = await this.getOrCreateGenres(bookInput.genres);
 
-    return this.bookRepository.save(book);
+    // save data 
+    this.bookRepository.save(book);
+
+     return {
+       id: book.id,
+       title: book.title,
+       author: book.author,
+       publishedYear: book.publishedYear,
+       genres: book.genres.map((genre) => genre.name),
+       stock: book.stock,
+     };
   }
 
   async delete(id: string): Promise<boolean> {
