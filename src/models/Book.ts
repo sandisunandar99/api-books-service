@@ -50,7 +50,6 @@ export class BookModel {
   }
 
   async getAll(): Promise<Book[]> {
-
     const queryBuilder = this.bookRepository
       .createQueryBuilder("book")
       .leftJoinAndSelect("book.genres", "genre");
@@ -60,7 +59,15 @@ export class BookModel {
     return books;
   }
 
-}
+  async getById(id: string): Promise<Book | null> {
+    return this.bookRepository.findOne({
+      where: { id },
+      relations: ["genres"],
+    });
+  }
+
+  
+}// end class
 
 // Singleton instance for the application
 export const bookModel = new BookModel();
