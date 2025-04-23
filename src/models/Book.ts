@@ -2,8 +2,19 @@ import { v4 as uuidv4 } from "uuid";
 import { AppDataSource } from "../database/data-source.js";
 import { Book } from "../entities/Book.js";
 import { Genre } from "../entities/Genre.js";
+import { Book } from '../entities/Book';
+import { promises } from "dns";
 
 export interface BookInput {
+  title: string;
+  author: string;
+  publishedYear: number;
+  genres: string[];
+  stock: number;
+}
+
+export interface BookOutput {
+  id: string;
   title: string;
   author: string;
   publishedYear: number;
@@ -48,18 +59,21 @@ export class BookModel {
     return genres;
   }
 
-  async getAll(): Promise<Book[]> {
+  async getAll(): Promise<BookOutput[]> {
     const queryBuilder = this.bookRepository
       .createQueryBuilder("book")
       .leftJoinAndSelect("book.genres", "genre");
 
     const books = await queryBuilder.getMany();
 
-    console.log("modellll");
-    console.log(books);
-    
-
-    return books;
+    return books.map((book) => ({
+      id: book.id,
+      title: book.title,
+      author: book.author,
+      publishedYear: book.publishedYear,
+      genres: book.genres.map((genre) => genre.name),
+      stock: book.stock,
+    }));
   }
 
   async getById(id: string): Promise<Book | null> {
@@ -68,7 +82,7 @@ export class BookModel {
       relations: ["genres"],
     });
   }
-  
+
   async update(id: string, bookInput: BookInput): Promise<Book | null> {
     const book = await this.bookRepository.findOne({
       where: { id },
